@@ -20,11 +20,10 @@ fun main(args: Array<String>) {
 
     RestAssured.baseURI = "https://reqres.in"
 
-    var response : Response = RestAssured.given().log().all()
+    var response: Response = RestAssured
+        .given().log().all()
         .`when`().get("/api/users?page=2")
-        .then().statusCode(200)
-        // .body("page", IsEqual.equalTo(2))
-//        .body("data.size()", IsEqual.equalTo(6))
+        .then().statusCode(200).body("page", IsEqual.equalTo(2))
         .extract().response()
 
     println(response.asString())
@@ -41,18 +40,33 @@ fun main(args: Array<String>) {
         response()
     }
 
+    println(responseNew.jsonPath().get<Int>("total"))
+
 //    var pageValue = responseNew.jsonPath().getInt("data[?(@.first_name=='Lindsay')].id")
 //    println(pageValue)
 
     var jsonPth = JsonPath.parse(responseNew.asString())
-    var id = jsonPth.read<List<Int>>("data[?(@.first_name=='Lindsay')].id")
-    println("ID "+id[0])
+    var id = jsonPth.read<List<Int>>("data[?(@.last_name=='Lawson')].id")
+    println("ID " + id[0])
 
     var instanc : ExampleJson2KtKotlin = responseNew.jsonPath().getObject("$", ExampleJson2KtKotlin::class.java)
     println(instanc.page)
     println(instanc.data.size)
-    var filterData = instanc.data.stream().filter { d -> d.first_name.equals("Lindsay") }.toList()
-    println(filterData[0].id)
+    var filterData = instanc.data.stream().filter { d -> d.last_name.equals("Lawson") }.toList()
+    println("Filtered Data "+filterData[0].avatar)
+
+
+    Given {
+        header("user-agent", "")
+    } When {
+        get("/api/users?page=2")
+    } Then {
+        statusCode(200)
+        body(JsonSchemaValidator.matchesJsonSchema(File("/Users/syedtarifabbasrizvi/eclipse-workspace/test/src/test/resources/example/schema.json")))
+    } Extract {
+        response()
+    }
+
 
 //    var response =
 //        RestAssured.given().log().all().`when`().get("/api/users/?page=2").then().log().all()

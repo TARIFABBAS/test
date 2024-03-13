@@ -3,13 +3,13 @@
   "type": "object",
   "properties": {
     "page": {
-      "type": "integer"
+      "type": "array"
     },
     "per_page": {
       "type": "integer"
     },
     "total": {
-      "type": "integer"
+      "type": "string"
     },
     "total_pages": {
       "type": "integer"
